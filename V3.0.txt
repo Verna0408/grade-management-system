@@ -1,0 +1,402 @@
+/*
+** 文件名: program7
+** 创建人: 200320226钟雨含
+** 日 期: 2020.11.1
+** 描 述: 学生成绩管理系统V3.0
+** 版 本: 
+*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define N 30
+#define max_len 20
+#define COURSE 6
+void Read_in(int score[][COURSE],long number[],char name[][max_len],int n,int q)
+{
+    int i=-1,j,t=0;
+    do
+    {
+        i++;
+        getchar();
+        printf("please input name!\n");
+        gets(name[i]);
+        printf("Please input student's ID !\n");
+        scanf("%ld",&number[i]);
+        getchar();
+        printf("Now input student's score of every course in order(ATTENTION!!DO NOT MORE THAN THE NUMBER YOU HAD INPUT)\n");
+        for(j=0;j<q;j++)
+        {   t=j+1;
+            printf("No.%d course",t);
+            scanf("%d",&score[i][j]);
+        }
+    }while(i<n-1);
+}
+//读入学生成绩和学号
+void Sum_Course(int score[][COURSE],int n,int *sum,int q)
+{
+    int i=0,S=0,j=0;
+    for(;i<q;i++)
+    {
+        for(S=0,j=0;j<n;j++)
+        {
+            S=S+score[j][i];
+        }
+        sum[i]=S;
+    }
+}
+//计算总和以及平均分
+void Swap1(int *x,int *y)
+{
+    int temp;
+    temp=*x;
+    *x=*y;
+    *y=temp;
+}
+//交换数据
+void Swap2(long *x,long *y)
+{
+    int temp;
+    temp=*x;
+    *x=*y;
+    *y=temp;
+}
+//交换数据
+void Swap3(char x[],char y[])
+{
+    char temp[max_len];
+    memcpy(temp,x,max_len);
+    memcpy(x,y,max_len);
+    memcpy(y,temp,max_len);
+}
+
+void Swap4(int x[],int y[])
+{
+    int temp[COURSE];
+    memcpy(temp,x,COURSE);
+    memcpy(x,y,COURSE);
+    memcpy(y,temp,COURSE);
+}
+void SelectionSort1(int a[],long int b[],char Na[][max_len],int n,int(*compare)(int a,int b),int c[][COURSE])
+{
+    int i,j,k;
+    for(i=0;i<n-1;i++)
+    {
+        k=i;
+        for(j=i+1;j<n;j++)
+        {
+            if((*compare)(a[j],a[k]))k=j;
+        }
+        if(k!=i)
+        {Swap1(&a[k],&a[i]);
+         Swap2(&b[k],&b[i]);
+         Swap3(&Na[k][0],&Na[i][0]);
+         Swap4(&c[k][0],&c[i][0]);}
+    }
+}
+//按顺序排列（用于以成绩为驱动）
+void SelectionSort2(long int a[],int b[][COURSE],char Na[][max_len],int n,int(*compare)(int a,int b),int c[])
+{
+    int i,j,k;
+    for(i=0;i<n-1;i++)
+    {
+        k=i;
+        for(j=i+1;j<n;j++)
+        {
+            if((*compare)(a[j],a[k]))k=j;
+        }
+        if(k!=i)
+        {Swap2(&a[k],&a[i]);
+         Swap4(&b[k][0],&b[i][0]);
+         Swap3(&Na[k][0],&Na[i][0]);
+         Swap1(&c[k],&c[i]);}
+    }
+}
+//按顺序排列（用于以学号为驱动）
+int Ascending(int a,int b)
+{
+    return a<b;
+}//升序
+int Descending(int a,int b)
+{
+    return a>b;
+}//降序
+void Printrank(long int number[],char name[][max_len],int n)
+{
+    int i,t;
+    for(i=0;i<n;i++)
+    {   t=i+1;
+        printf("No.%d:the name:%s\n",t,name[i]);
+        printf("ID%ld",number[i]);
+    }
+    printf("\n");
+}
+//输出学号和成绩
+void printscore(int score[][COURSE],long int num[],char name[][max_len],int n,int q)
+{
+    int i,j;
+    printf("-----------------------\n");
+    for(i=0;i<n;i++)
+    {
+        printf("ID: %12ld\t name:%s\t",num[i],name[i]);
+        for(j=0;j<q;j++)
+        {
+            printf("%4d\n",score[i][j]);
+        }
+
+    }
+}//成绩表输出
+int Linsearch1(long number[],long x,int n)
+{
+    int i;
+    for(i=0;i<n;i++)
+    {
+        if(number[i]==x) return i;
+    }
+    return -1;
+}
+//按学号查找
+void Analysis(int score[][COURSE],int n,int q)
+{
+    int a=0,b=0,c=0,d=0,e=0,i;
+    double A=0,B=0,C=0,D=0,E=0;
+    for(i=0;i<n;i++)
+    {
+        if(80<=score[i][q] && score[i][q]<=100)
+        {
+            if(score[i][q]>=90)a++;
+            else b++;
+        }
+        else if(60<=score[i][q] &&score[i][q]<80)
+        {
+            if(score[i][q]>=70) c++;
+            else d++;
+        }
+        else e++;
+    }
+    A=(double)a/(double)n;
+    B=(double)b/(double)n;
+    C=(double)c/(double)n;
+    D=(double)d/(double)n;
+    E=(double)e/(double)n;
+    printf("No.%d course analysis is:",q+1);
+    printf("(excellent)90~100 :%d students,percentage is%f\n",a,A);
+    printf("(good)80~89 :%d students,percentage is%f\n",b,B);
+    printf("(just so-so)70~79:%d students,percentage is%f\n",c,C);
+    printf("(pass)60~69:%d students,percentage is%f\n",d,D);
+    printf("(unpass)0~59:%d students,percentage is%f\n",e,E);
+}
+//分析数据
+void First(int score[][COURSE],long number[],int n)
+{
+    if(score[0]==0 && number[0]==0)
+    {  printf("you need to input name and score and ID first!!!\n you need to play again");
+        exit(0);
+    }
+}
+//防止有人不先输入成绩和学号直接点后面的选项使程序进入死循环
+void SortString(char name[][max_len],int a[][COURSE],long b[],int n)
+{
+    char temp[max_len];
+    int i,j;
+    for(i=0;i<n-1;i++)
+    {
+        for(j=1;j<n;j++)
+        {
+            if(strcmp(name[j],name[i])<0)
+            {
+                strcpy(temp,name[i]);
+                strcpy(name[i],name[j]);
+                strcpy(name[j],temp);
+                Swap4(&a[i][0],&a[j][0]);
+                Swap2(&b[i],&b[j]);
+            }
+        }
+    }
+}
+//按字典顺序输出名字
+int Linsearch2(char name[][max_len],char x[][max_len],int n)
+{
+    int i=0;
+    for(;i<n;i++)
+    { if(strcmp(name[i],x[0])==0)
+      return i;}
+      return -1;
+}
+//按名字查询
+void Sum_stu(int score[][COURSE],int sum[],int n,int q)
+{
+    int i,j;
+    for(i=0;i<n;i++)
+    {
+        sum[i]=0;
+        for(j=0;j<q;j++)
+        {
+            sum[i]=sum[i]+score[i][j];
+        }
+    }
+}
+//学生个人总分
+void Print(int score[][COURSE],long num[],int sum[],double aver[],int n,int q,char name[][max_len])
+{
+    int i,j;
+    printf("Student's name\t ID\t score\t\t sum\t aver\n");
+    for(i=0;i<n;i++)
+    {
+        printf("%s\t %12ld\t",name[i],num[i]);
+        for(j=0;j<q;j++)
+        {
+            printf("%2d\t",score[i][j]);
+        }
+      printf("%4d\t%5.1f\n",sum[i],aver[i]);
+    }
+}//信息全部打印
+int main()
+{
+  int score[N][COURSE],n,t,sumCourse[COURSE],sumforstu[N],i,c,ret;
+  int p=0;
+  double averCourse[COURSE],averforstu[N];
+  long int number[N]={0},pos,x;
+  char name[N][max_len],m[1][max_len];
+  int order;
+  do
+  {
+  printf("please input your choice:\n");
+  printf("1.Input record\n 2.Calculate total and average score of every course\n 3.Calculate total and average score of every student\n");
+  printf("4.Sort in descending order by total score of every student\n 5.Sort in ascending order by total scoreof every student\n");
+  printf("6.Sort in ascending order by number\n7.Sort in dictionary order by name\n 8.Search by number\n 9.Search by name\n 10.Statistic analysis for every course\n 11.List record\n0.Exit\n ");
+  //菜单打印
+  scanf("%d",&order);
+  switch(order)
+  {
+  case 1:
+      printf("please input total students number:\n");
+      ret=scanf("%d",&n);
+      while(ret!=1)
+    {
+        while(getchar()!='\n');
+        printf("Please reput again");
+        ret=scanf("%d",&n);
+    } //纠正非法输入，防止程序进入死循环
+      printf("please input total course number:\n");
+      scanf("%d",&c);
+      while(ret!=1)
+    {
+        while(getchar()!='\n');
+        printf("Please reput again");
+        ret=scanf("%d",&c);
+    } //纠正非法输入，防止程序进入死循环
+      Read_in(score,number,name,n,c);
+      t=1;
+      break;
+  case 2:
+      First(score,number,n);
+      Sum_Course(score,n,sumCourse,c);
+      for(i=0;i<c;i++)
+      {
+          averCourse[i]=(double)sumCourse[i] /n;
+      }
+      for(i=0;i<c;i++)
+      {   p=i+1;
+          printf("the sum is%d,the average of No.%d course is%f\n",sumCourse[i],p,averCourse[i]);
+      }
+      t=2;
+      break;
+  case 3:
+      First(score,number,n);
+      Sum_stu(score,sumforstu,n,c);
+      for(i=0;i<n;i++)
+      {
+          averforstu[i]=(double)sumforstu[i] /c;
+      }
+      for(i=0;i<n;i++)
+      {
+          printf("the %s student:the sum is%d,the average of every course is%f\n",name[i],sumforstu[i],averforstu[i]);
+      }
+      t=3;
+      break;
+  case 4:
+      First(score,number,n);
+      Sum_stu(score,sumforstu,n,c);
+      SelectionSort1(sumforstu,number,name,n,Descending,score);
+      Printrank(number,name,n);
+      t=4;
+      break;
+  case 5:
+      First(score,number,n);
+      Sum_stu(score,sumforstu,n,c);
+      SelectionSort1(sumforstu,number,name,n,Ascending,score);
+      Printrank(number,name,n);
+      t=5;
+      break;
+   case 6:
+       First(score,number,n);
+       Sum_stu(score,sumforstu,n,c);
+     SelectionSort2(number,score,name,n,Ascending,sumforstu);
+     printscore(score,number,name,n,c);
+    t=6;
+    break;
+   case 7:
+      SortString(name,score,number,n);
+      printscore(score,number,name,n,c);
+      t=7;
+      break;
+  case 8:
+      printf("Input the searching ID:\n");
+      ret=scanf("%ld",&x);
+      while(ret!=1)
+    {
+        while(getchar()!='\n');
+        printf("Please reput your searching ID：");
+        ret=scanf("%ld",&x);
+    } //纠正非法输入，防止程序进入死循环
+      Sum_stu(score,sumforstu,n,c);
+      SelectionSort1(sumforstu,number,name,n,Descending,score);
+      pos=Linsearch1(number,x,n);
+      if(pos!=-1)
+      {   printf("the rank is%ld",pos+1);
+          for(i=0;i<c;i++)
+         printf("score=%d\n",score[pos][i]);
+      }
+      else
+        printf("Not found!\n");
+      t=8;
+      break;
+   case 9:
+       getchar();
+      printf("Input the searching NAME:\n");
+      gets(m[0]);
+      Sum_stu(score,sumforstu,n,c);
+      SelectionSort1(sumforstu,number,name,n,Descending,score);
+      pos=Linsearch2(name,m,n);
+      if(pos!=-1)
+      {   printf("the rank is%ld",pos+1);
+          for(i=0;i<c;i++)
+         printf("score=%d\n",score[pos][i]);
+      }
+      else
+        printf("Not found!\n");
+      t=8;
+      break;
+ case 10:
+      First(score,number,n);
+      for(i=0;i<c;i++)
+      {
+        Analysis(score,n,i);
+      }
+       t=9;
+       break;
+  case 11:
+     Sum_stu(score,sumforstu,n,c);
+     for(i=0;i<n;i++)
+      {
+          averforstu[i]=(double)sumforstu[i] /n;
+      }
+      Print(score,number,sumforstu,averforstu,n,c,name);
+      t=11;
+      break;
+   default:t=0;
+       exit(0);
+  }
+  }while(t!=0);
+return 0;
+}
